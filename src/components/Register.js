@@ -10,7 +10,13 @@ import "./Register.css";
 
 const Register = () => {
   const { enqueueSnackbar } = useSnackbar();
-
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    confirmPassword: ""
+  });
+  const [loading, setLoading] = useState(false);
+  
 
   // TODO: CRIO_TASK_MODULE_REGISTER - Implement the register function
   /**
@@ -35,7 +41,43 @@ const Register = () => {
    *      "message": "Username is already taken"
    * }
    */
-  const register = async (formData) => {
+  const register = async (e) => {
+    e.preventDefault();
+    
+    if (validateInput(formData) === true) {
+      const data = {
+        username: formData.username,
+        password: formData.password
+      };
+      setLoading(true);
+      // console.log(data);
+      // try {
+      await axios.post(`${config.endpoint}${"/auth/register"}`, data)
+        .then((response) => {
+          enqueueSnackbar("Registered successfully", { variant: 'success' })
+        })
+        .catch((e) => {
+          if (e.response === undefined)
+            enqueueSnackbar("Something went wrong. Check that the backend is running, reachable and returns valid JSON.",
+              { variant: 'warning' });
+          else
+            enqueueSnackbar(e.response.data.message, { variant: 'error' });
+        }).finally(() => {
+            setLoading(false);
+        });
+        // enqueueSnackbar("Registered successfully", { variant: 'success' });
+      // } catch (e) {
+      //   if (e.response === undefined)
+      //     enqueueSnackbar("Something went wrong. Check that the backend is running, reachable and returns valid JSON.",
+      //         { variant: 'warning' });
+      //     else
+      //       enqueueSnackbar(e.response.data.message, { variant: 'error' });
+      // }
+      // finally{
+      //   setLoading(false);
+      // }
+    }
+    
   };
 
   // TODO: CRIO_TASK_MODULE_REGISTER - Implement user input validation logic
@@ -57,8 +99,39 @@ const Register = () => {
    * -    Check that confirmPassword field has the same value as password field - Passwords do not match
    */
   const validateInput = (data) => {
+    const { username, password, confirmPassword } = data;
+    if (username.length === 0) {
+      enqueueSnackbar("Username is a required field", { variant: 'error' });
+      return false;
+    }
+    else if (username.length < 6) {
+      enqueueSnackbar("Username must be at least 6 characters", { variant: 'error' });
+      return false;
+    }
+    else if (password.length === 0) {
+      enqueueSnackbar("Password is a required field", { variant: 'error' });
+      return false;
+    }
+    else if (password.length < 6) {
+      enqueueSnackbar("Password must be at least 6 characters", { variant: 'error' });
+      return false;
+    }
+    else if (password!== confirmPassword) {
+      enqueueSnackbar("Passwords do not match", { variant: 'error' });
+      return false;
+    }
+    else
+      return true;
   };
-
+  const handleChange = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    // console.log(name, value);
+    setFormData({
+      ...formData,
+      [name]: value
+    })
+  }
   return (
     <Box
       display="flex"
@@ -76,6 +149,8 @@ const Register = () => {
             variant="outlined"
             title="Username"
             name="username"
+            value={formData.username}
+            onChange={handleChange}
             placeholder="Enter Username"
             fullWidth
           />
@@ -84,6 +159,8 @@ const Register = () => {
             variant="outlined"
             label="Password"
             name="password"
+            value={formData.password}
+            onChange={handleChange}
             type="password"
             helperText="Password must be atleast 6 characters length"
             fullWidth
@@ -94,12 +171,14 @@ const Register = () => {
             variant="outlined"
             label="Confirm Password"
             name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
             type="password"
             fullWidth
           />
-           <Button className="button" variant="contained">
+          {loading ? <div className="loader" ><CircularProgress color="success" /> </div>: <Button className="button" variant="contained" onClick={register}>
             Register Now
-           </Button>
+          </Button>}
           <p className="secondary-action">
             Already have an account?{" "}
              <a className="link" href="#">
