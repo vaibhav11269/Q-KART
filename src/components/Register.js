@@ -3,6 +3,7 @@ import { Box } from "@mui/system";
 import axios from "axios";
 import { useSnackbar } from "notistack";
 import React, { useState } from "react";
+import { useHistory, Link } from "react-router-dom";
 import { config } from "../App";
 import Footer from "./Footer";
 import Header from "./Header";
@@ -16,6 +17,7 @@ const Register = () => {
     confirmPassword: ""
   });
   const [loading, setLoading] = useState(false);
+  const history = useHistory();
   
 
   // TODO: CRIO_TASK_MODULE_REGISTER - Implement the register function
@@ -55,6 +57,7 @@ const Register = () => {
       await axios.post(`${config.endpoint}${"/auth/register"}`, data)
         .then((response) => {
           enqueueSnackbar("Registered successfully", { variant: 'success' })
+          history.push("/login");
         })
         .catch((e) => {
           if (e.response === undefined)
@@ -141,7 +144,7 @@ const Register = () => {
     >
       <Header hasHiddenAuthButtons />
       <Box className="content">
-        <Stack spacing={2} className="form">
+        <Stack spacing={1} className="form">
           <h2 className="title">Register</h2>
           <TextField
             id="username"
@@ -176,14 +179,16 @@ const Register = () => {
             type="password"
             fullWidth
           />
-          {loading ? <div className="loader" ><CircularProgress color="success" /> </div>: <Button className="button" variant="contained" onClick={register}>
+          {loading ? <div className="loader" >
+            <CircularProgress color="success" />
+          </div> : <Button className="button" variant="contained" onClick={register}>
             Register Now
           </Button>}
           <p className="secondary-action">
             Already have an account?{" "}
-             <a className="link" href="#">
+             <Link className="link" to="/login">
               Login here
-             </a>
+              </Link>
           </p>
         </Stack>
       </Box>

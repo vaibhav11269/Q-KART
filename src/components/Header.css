@@ -8,8 +8,10 @@
     background: #ffffff;
 }
 
-.username-text {
-    display: none;
+.user{
+   display: flex;
+   align-items: center;
+   justify-content: center;      
 }
 
 .header-title {
@@ -19,7 +21,11 @@
 .explore-button {
     color: #00a278 !important;
 }
-
+.register-button {
+    color: white !important;
+    background-color: #00a278 !important;;
+    
+}
 @media screen and (min-width: 768px) {
     .username-text {
         display: block;
