@@ -29,6 +29,7 @@ import "./Products.css";
 
 
 const Products = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const [productsList,setProductsList] = useState([
       {
       "name":"Tan Leatherette Weekender Duffle",
@@ -39,7 +40,9 @@ const Products = () => {
       "_id":"PmInA797xJhMIPti"
       }
   ]);
-
+  const [searchInput, setSearchInput] = useState("");
+  const [loader, setLoader] = useState(false);
+  const [debounceTimeout, setDebounceTimeout] = useState(0);
   // TODO: CRIO_TASK_MODULE_PRODUCTS - Fetch products data and store it
   /**
    * Make API call to get the products list and store it to display the products
@@ -79,10 +82,19 @@ const Products = () => {
    */
   useEffect(() => {
     performAPICall();
-  });
+  },[]);
   const performAPICall = async () => {
-      let url
-      const response=
+    setLoader(true);
+    let url = `${config.endpoint}/products`;
+    try {
+      const response = await axios.get(url);
+      setProductsList(response.data);
+      setLoader(false);
+    } catch (e) {
+      enqueueSnackbar(e.response.data.message, { variant: 'error' });
+      setProductsList([]);
+      setLoader(false);
+    }
   };
 
   // TODO: CRIO_TASK_MODULE_PRODUCTS - Implement search logic
@@ -155,14 +167,11 @@ const Products = () => {
           </Box>
         </Grid>
         {productsList.map((product)=>{
-          const {name, cost, rating, image, id} = product;
+          const { _id } = product;
           return (
-            <Grid item className="product-grid">
+            <Grid item className="product-grid" xs={6} md={3} key={_id}>
               <ProductCard
-                title={name}
-                imageLink={image}
-                price={cost}
-                rating={rating}
+                product={product}
               />
             </Grid>
           );

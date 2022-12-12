@@ -2,11 +2,11 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Avatar, Button, Stack } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useHistory,Link } from "react-router-dom";
-import React from "react";
+import React,{ useState } from "react";
 import "./Header.css";
 
 const Header = ({ children, hasHiddenAuthButtons }) => {
-  // console.log(hasHiddenAuthButtons, children);
+  const [searchInput, setSearchInput] = useState("");
   const history = useHistory();
   return (
     <Box className="header">

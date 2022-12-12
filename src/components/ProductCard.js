@@ -3,24 +3,24 @@ import { Button,Card,CardActions,CardContent,CardMedia,Rating,Typography} from "
 import React from "react";
 import "./ProductCard.css";
 
-const ProductCard = (props) => {
-  console.log(props);
+const ProductCard = (product) => {
+  const { name, image, cost, rating } = product.product;
   return (
     <Card className="card">
       <CardMedia
         component="img"
         height="auto"
-        image={props.imageLink}
+        image={image}
         alt="Image"
       />
       <CardContent>
         <Typography  gutterBottom>
-          {props.title}
+          {name}
         </Typography>
         <Typography  gutterBottom>
-          ${props.price}
+          ${cost}
         </Typography>
-        <Rating name="read-only" value={props.rating} readOnly gutterBottom/>
+        <Rating name="read-only" value={rating} readOnly />
         <Button className="card-button" variant="contained" fullWidth>ADD TO CART</Button>
       </CardContent>
     </Card>
